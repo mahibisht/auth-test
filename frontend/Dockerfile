@@ -1,30 +1,22 @@
-# # Stage 1: Build the Angular application
-# FROM node:20.17.0-slim as build-stage
-
-# WORKDIR /app
-
-# COPY package*.json /app/
-
-# RUN npm install
-
-# COPY . /app
-
-# RUN npm run build -- --outputPath=./dist/out
-
-# Stage 2: Serve the app with NGINX
+# Use the official Nginx image as the base image
 FROM nginx:alpine
 
-# Remove the default nginx static assets
-RUN rm -rf /usr/share/nginx/html/*
+# Remove the default Nginx configuration file
+RUN rm /etc/nginx/conf.d/default.conf
 
-# Copy the built app from the previous stage and place it in the appropriate directory
-# COPY --from=build-stage /app/dist/out/ /var/www/myfrontend
+# Copy the custom Nginx configuration file into the container
+COPY default.conf /etc/nginx/conf.d/
 
-COPY . /var/www/myfrontend
+# Remove the default Nginx HTML file
+RUN rm /usr/share/nginx/html/index.html
 
-# Copy your custom nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY ./ /usr/share/nginx/html/
 
+# Expose port 80
 EXPOSE 80
 
+# Start Nginx when the container has provisioned.
+CMD ["nginx", "-g", "daemon off;"]
+
 # docker build:  docker build -t ui-app:latest .
+# docker run -d -p 8080:80 ui-app

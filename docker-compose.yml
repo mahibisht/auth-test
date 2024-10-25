@@ -1,0 +1,9 @@
+services:
+  ui-app:
+    image: ui-app:latest
+    ports:
+      - "80:80"
+  flask-app:
+    image: flask-app:latest
+    ports:
+      - "5000:5000"
